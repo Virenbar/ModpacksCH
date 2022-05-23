@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<DebugType>embedded</DebugType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<LangVersion>preview</LangVersion>
+		<ApplicationIcon>..\console.ico</ApplicationIcon>		
+	</PropertyGroup>	
+	<PropertyGroup>
+		<DeleteExistingFiles>true</DeleteExistingFiles>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ModpacksCH.API\ModpacksCH.API.csproj" />
+	</ItemGroup>	
+	<ItemGroup>
+		<PackageReference Include="Spectre.Console" Version="0.44.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta3.22114.1" />
+	</ItemGroup>
+</Project>
