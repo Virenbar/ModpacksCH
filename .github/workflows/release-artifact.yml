@@ -19,20 +19,17 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
-      - name: LS
-        run: ls -R
-
       - name: Archive artifacts
         run: |
           zip -r "ModpacksCH(Windows).zip" "ModpacksCH(win)"
           zip -r "ModpacksCH(Linux).zip" "ModpacksCH(linux)"
 
-      - name: LS
-        run: ls -R
+      # - name: LS
+      #   run: ls -R
 
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: |
-      #       ModpacksCH.exe
-      #       ModpacksCH
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ModpacksCH(Windows).zip
+            ModpacksCH(Linux).zip
