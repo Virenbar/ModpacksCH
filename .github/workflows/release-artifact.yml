@@ -21,8 +21,8 @@ jobs:
 
       - name: Archive artifacts
         run: |
-          zip -r "ModpacksCH(Windows).zip" "ModpacksCH(win)"
-          zip -r "ModpacksCH(Linux).zip" "ModpacksCH(linux)"
+          zip -r "ModpacksCH-Windows.zip" "ModpacksCH(win)"
+          zip -r "ModpacksCH-Linux.zip" "ModpacksCH(linux)"
 
       # - name: LS
       #   run: ls -R

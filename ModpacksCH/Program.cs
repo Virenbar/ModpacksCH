@@ -15,14 +15,6 @@ var Parser = new CommandLineBuilder(RootCommand)
     .UseHelp()
     .Build();
 
-#if DEBUG
-Parser.Invoke("s \"FTB Direwolf20\"");
-//Parser.Invoke("s gjljh;dfjh");
-//Parser.Invoke("i 95");
-//Parser.Invoke("d 95 --path \"C:\\000\"");
-//Parser.Invoke("i 281999");
-//Parser.Invoke("d 95");
-#else
 if (args.Length > 0) { Parser.Invoke(args); }
 else
 {
@@ -37,4 +29,3 @@ else
         AnsiConsole.WriteLine();
     }
 }
-#endif

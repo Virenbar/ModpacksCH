@@ -3,6 +3,8 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Virenbar/ModpacksCH</RepositoryUrl>
 	</PropertyGroup>
 	
 	<ItemGroup>

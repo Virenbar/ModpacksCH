@@ -6,7 +6,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<LangVersion>preview</LangVersion>
-		<ApplicationIcon>..\console.ico</ApplicationIcon>		
+		<ApplicationIcon>..\console.ico</ApplicationIcon>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Virenbar/ModpacksCH</RepositoryUrl>
 	</PropertyGroup>	
 	<PropertyGroup>
 		<DeleteExistingFiles>true</DeleteExistingFiles>

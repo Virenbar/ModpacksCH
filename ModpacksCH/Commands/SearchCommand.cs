@@ -51,7 +51,7 @@ namespace ModpacksCH.Commands
                 T.AddColumns("ID", "Name", "Version");
                 foreach (var M in CFModpacks)
                 {
-                    T.AddRow($"[yellow]{M.ID}[/]", M.Name, $"{M.LatestVersion().Name}");
+                    T.AddRow(new Markup($"[yellow]{M.ID}[/]"), new Text(M.Name), new Text(M.LatestVersion().Name));
                 }
                 AnsiConsole.Write(T);
             }
