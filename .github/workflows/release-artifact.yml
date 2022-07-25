@@ -31,5 +31,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ModpacksCH(Windows).zip
-            ModpacksCH(Linux).zip
+            ModpacksCH-Windows.zip
+            ModpacksCH-Linux.zip
