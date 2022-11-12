@@ -2,7 +2,7 @@
 
 namespace ModpacksCH.API.Model.CurseForge
 {
-    public partial class Dependency
+    public class Dependency
     {
         [JsonProperty("modId")]
         public long ModId { get; set; }

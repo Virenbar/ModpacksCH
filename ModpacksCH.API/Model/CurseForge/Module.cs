@@ -2,7 +2,7 @@
 
 namespace ModpacksCH.API.Model.CurseForge
 {
-    public partial class Module
+    public class Module
     {
         [JsonProperty("name")]
         public string Name { get; set; }

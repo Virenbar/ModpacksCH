@@ -31,7 +31,7 @@ namespace ModpacksCH
             {
                 var Tasks = Files.Select(async (F) =>
                 {
-                    var File = await TryDownloadTile(F);
+                    await TryDownloadTile(F);
                     Interlocked.Increment(ref Count);
                     IP.Report(Count);
                 });

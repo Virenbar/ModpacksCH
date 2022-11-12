@@ -2,7 +2,7 @@
 
 namespace ModpacksCH.API.Model.CurseForge
 {
-    public partial class SortableGameVersion
+    public class SortableGameVersion
     {
         [JsonProperty("gameVersionName")]
         public string GameVersionName { get; set; }
