@@ -1,6 +1,6 @@
 ﻿using ModpacksCH.API.Model;
 
-namespace ModpacksCH
+namespace ModpacksCH.API
 {
     public class CHClient : BaseClient
     {

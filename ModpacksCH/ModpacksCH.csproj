@@ -5,26 +5,31 @@
 		<DebugType>embedded</DebugType>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-		<LangVersion>preview</LangVersion>
 		<ApplicationIcon>..\console.ico</ApplicationIcon>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/Virenbar/ModpacksCH</RepositoryUrl>
-	</PropertyGroup>	
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<DeleteExistingFiles>true</DeleteExistingFiles>
 		<PublishSingleFile>true</PublishSingleFile>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
-	
+
+	<PropertyGroup>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<None Include="..\.editorconfig" Link=".editorconfig" />
+		<PackageReference Include="Spectre.Console" Version="0.45.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\ModpacksCH.API\ModpacksCH.API.csproj" />
-	</ItemGroup>	
-	<ItemGroup>
-		<PackageReference Include="Spectre.Console" Version="0.44.0" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
-		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta3.22114.1" />
+		<None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
+
 </Project>

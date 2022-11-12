@@ -16,5 +16,11 @@
         public long Updated { get; set; }
         public string Url { get; set; }
         public string Version { get; set; }
+        public CF CurseForge { get; set; }
+        public class CF
+        {
+            public int Project { get; set; }
+            public int File { get; set; }
+        }
     }
 }

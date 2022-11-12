@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace ModpacksCH
+namespace ModpacksCH.API
 {
     public abstract class BaseClient : IDisposable
     {
@@ -38,24 +38,11 @@ namespace ModpacksCH
         }
 
         #region Dispose
-        private bool disposedValue;
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
-            Dispose(disposing: true);
+            ((IDisposable)Client).Dispose();
             GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    Client.Dispose();
-                }
-                disposedValue = true;
-            }
         }
 
         #endregion Dispose

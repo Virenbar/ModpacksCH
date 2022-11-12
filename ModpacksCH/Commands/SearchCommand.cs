@@ -1,7 +1,8 @@
-﻿using ModpacksCH.API.Model;
+﻿using ModpacksCH.API;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using System.Diagnostics;
 
 namespace ModpacksCH.Commands
 {
@@ -17,6 +18,7 @@ namespace ModpacksCH.Commands
 
         private async Task<int> HandleCommand(string name)
         {
+            Trace.WriteLine($"Search: {name}");
             (var Modpacks, var CFModpacks) = await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Searching modpacks...", async ctx =>
@@ -28,7 +30,7 @@ namespace ModpacksCH.Commands
                     ctx.Status("Search complete");
                     return (Modpacks, CFModpacks);
                 });
-
+            Trace.WriteLine($"Search done: {Modpacks.Length} {CFModpacks.Length}");
             if (Modpacks.Length + CFModpacks.Length == 0)
             {
                 AnsiConsole.MarkupLine("[yellow]No modpacks found[/]");
@@ -47,7 +49,7 @@ namespace ModpacksCH.Commands
             }
             if (CFModpacks.Length > 0)
             {
-                var T = new Table { Title = new TableTitle("[white]CurseForge Modpacks[/]") };
+                var T = new Table { Title = new TableTitle("[white]CurseForge Modpacks ([red]WIP[/])[/]") };
                 T.AddColumns("ID", "Name", "Version");
                 foreach (var M in CFModpacks)
                 {

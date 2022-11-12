@@ -1,6 +1,6 @@
 ﻿using ModpacksCH.API.Model;
 
-namespace ModpacksCH.API
+namespace ModpacksCH.Models
 {
     public class DownloadInfo
     {
@@ -12,11 +12,13 @@ namespace ModpacksCH.API
             Version = version;
             OutPath = outPath;
             IsServer = isServer;
+            Files = Version.Files.Where(F => IsServer ? !F.ClientOnly : !F.ServerOnly).ToList();
         }
 
-        public bool IsServer { get; set; }
-        public ModpackManifest Modpack { get; set; }
-        public string OutPath { get; set; }
-        public VersionManifest Version { get; set; }
+        public List<ModpackFile> Files { get; }
+        public bool IsServer { get; }
+        public ModpackManifest Modpack { get; }
+        public string OutPath { get; }
+        public VersionManifest Version { get; }
     }
 }
