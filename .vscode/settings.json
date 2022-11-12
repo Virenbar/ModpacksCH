@@ -1,8 +1,0 @@
-{
-    "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": [
-            "file:///c%3A/VCS/ModpacksCH/.github/workflows/release-artifact.yml",
-            "file:///c%3A/VCS/ModpacksCH/.github/workflows/build-artifact.yml"
-        ]
-    }
-}

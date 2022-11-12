@@ -1,32 +1,79 @@
-# ModpacksCH
+# ModpacksCH [![Build artifact](https://img.shields.io/github/workflow/status/Virenbar/ModpacksCH/Build%20Artifact?label=Build&logo=github)](https://github.com/Virenbar/ModpacksCH/actions/workflows/build-artifact.yml)
 
-Console application for downloading modpacks from modpacks.ch
+Command line application for downloading modpacks from [Feed the Beast](https://www.feed-the-beast.com/modpacks) (modpacks.ch)
+
+![terminal](/assets/images/terminal.gif)
+
+```text
+.\ModpacksCH <command> [options]
+
+Commands:
+    s, search <name>                     Search modpacks by name
+    i, info <modpackID>                  Show info about modpack
+    d, download <modpackID> <versionID>  Download modpack
+
+Options:
+    -s, --server       Download server version
+    -p, --path <path>  Directory to save modpack [default: <current-dir>]
+    -t, --trace        Write trace log
+    -?, -h, --help     Show help and usage information
+```
+
+## Installation
+
+* Install [.NET 6.x](https://dotnet.microsoft.com/download)
+* Download [latest release](https://github.com/Virenbar/ModpacksCH/releases)
 
 ## Usage
 
-```console
-ModpacksCH [command] [options]
+1. First search for modpack ID
 
-Options:
-  -?, -h, --help  Show help and usage information
+    ```text
+    > .\ModpacksCH search <name>
 
-Commands:
-  s, search <name>                     Search modpacks by name
-  i, info <modpackID>                  Show info about modpack
-  d, download <modpackID> <versionID>  Download modpack
-```
+    Example:
+    > .\ModpacksCH s stoneblock
+                               FTB Modpacks
+    ┌─────┬───────────────────────────┬─────────┬────────────┐
+    │ ID  │ Name                      │ Version │ MC Version │
+    ├─────┼───────────────────────────┼─────────┼────────────┤
+    │ 4   │ FTB Presents Stoneblock 2 │ 1.22.0  │ 1.12.2     │
+    │ 100 │ FTB StoneBlock 3          │ 1.2.1   │ 1.18.2     │
+    └─────┴───────────────────────────┴─────────┴────────────┘
+    ...
+    ```
 
-* Find modpackID using search command or on [modpack page](https://feed-the-beast.com/modpack)  
-* Use info command to see info about modpack
-* Download modpack using modpackID (Latest version without versionID)
+2. Then available modpack versions
+
+    ```text
+    > .\ModpacksCH info <modpackID>
+
+    Example:
+    > .\ModpacksCH i 100
+    Modpack: FTB StoneBlock 3 (ID: 100)
+    ┌───────────────────────────────────────────────────────Synopsis───────────────────────────────────────────────────────┐
+    │ In a world surrounded by stone, build yourself a subterranean kingdom that really rocks! Use magic and technology to │
+    │ forge your realm to your designs.                                                                                    │
+    └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+    Latest version: ID: 2287 - 1.2.1 (Beta)
+    Other versions
+    ├── ID: 2283 - 1.2.0 (Release)
+    ├── ID: 2282 - 1.1.1 (Release)
+    ...
+    ```
+
+3. Download modpack (Latest version if no version ID provided)
+
+    ```text
+    > .\ModpacksCH download <modpackID> [<versionID>]
+
+    Example:
+    > .\ModpacksCH d 100
+    ```
+
+### Notes
+
+* You can also find modpack and version ID on [modpack page](https://www.feed-the-beast.com/modpacks)
 * note.txt contains Forge version and recommended memory
-
-Running without arguments will launch in interactive mode
-
-Search command result
-
-![search command](./assets/search.png)
-
-Info command result
-
-![info command](./assets/info.png)
+* CurseForge modpack download is **WIP** (Or even broken)
+* Executing without arguments will launch in interactive mode
