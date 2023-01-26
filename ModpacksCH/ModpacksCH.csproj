@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<TargetFramework>net6.0</TargetFramework>
 		<DebugType>embedded</DebugType>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -11,14 +12,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<DeleteExistingFiles>true</DeleteExistingFiles>
 		<PublishSingleFile>true</PublishSingleFile>
-		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 		<PublishTrimmed>true</PublishTrimmed>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,5 +29,4 @@
 		<ProjectReference Include="..\ModpacksCH.API\ModpacksCH.API.csproj" />
 		<None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
-
 </Project>
