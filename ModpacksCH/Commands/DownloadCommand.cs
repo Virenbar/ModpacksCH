@@ -5,6 +5,7 @@ using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
+using System.Text;
 
 namespace ModpacksCH.Commands
 {
@@ -70,16 +71,24 @@ namespace ModpacksCH.Commands
                 .AddRow(new Markup("[white]Modpack path:[/]"), new TextPath(ModpackPath).LeafColor(Color.Yellow));
             AnsiConsole.Write(Out);
 
+            var Game = Version.Game();
+            var Runtime = Version.Runtime();
+            var ModLoader = Version.ModLoader();
+
             var Specification = new Grid()
                 .AddColumns(2)
-                .AddRow("Java version:", $"{Version.JavaVersion()}")
-                .AddRow("Forge version:", $"{Version.ForgeVersion()}")
+                .AddRow($"{Game.Name.ToTitleCase()} version:", $"{Game.Version}")
+                .AddRow($"{Runtime.Name.ToTitleCase()} version:", $"{Runtime.Version}")
+                .AddRow($"{ModLoader.Name.ToTitleCase()} version:", $"{ModLoader.Version}")
                 .AddRow("Minimum memory:", $"{Version.Specs.Minimum}")
                 .AddRow("Recommended memory:", $"{Version.Specs.Recommended}");
             AnsiConsole.Write(new Panel(Specification) { Header = new PanelHeader("[yellow]Specification[/]", Justify.Center) });
 
-            var Note = $"Java version: {Version.JavaVersion()}\nForge version: {Version.ForgeVersion()}\nMinimum memory: {Version.Specs.Minimum}\nRecommended memory: {Version.Specs.Recommended}";
-            File.WriteAllText(Path.Combine(ModpackPath, "note.txt"), Note);
+            var Note = new StringBuilder();
+            Note.AppendLine($"{Game.Name.ToTitleCase()} version: {Game.Version}");
+            Note.AppendLine($"{Runtime.Name.ToTitleCase()} version: {Runtime.Version}");
+            Note.AppendLine($"{ModLoader.Name.ToTitleCase()} version: {ModLoader.Version}");
+            File.WriteAllText(Path.Combine(ModpackPath, "note.txt"), Note.ToString());
 
             return 0;
         }

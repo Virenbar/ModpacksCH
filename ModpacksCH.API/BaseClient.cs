@@ -10,7 +10,8 @@ namespace ModpacksCH.API
 
         static BaseClient()
         {
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            // Windows 7 does't support TSL 1.3
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13 | SecurityProtocolType.Tls12;
         }
 
         protected BaseClient(string EndPoint) : this() { Client.BaseAddress = new Uri(EndPoint); }
