@@ -61,5 +61,5 @@ jobs:
         with:
           name: ModpacksCH(${{ matrix.profile }})
           path: |
-            ModpacksCH\publish\${{ matrix.framework }}\**
+            ModpacksCH\publish\${{ matrix.profile }}\**
           if-no-files-found: error
