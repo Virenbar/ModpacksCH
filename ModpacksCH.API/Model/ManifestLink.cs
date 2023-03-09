@@ -1,6 +1,6 @@
 ﻿namespace ModpacksCH.API.Model
 {
-    public class CHLink
+    public class ManifestLink
     {
         public long ID { get; set; }
         public string Name { get; set; }

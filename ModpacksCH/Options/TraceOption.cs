@@ -9,23 +9,26 @@ namespace DynmapImageExport.Options
     {
         private static TraceListener TL;
 
+        /// <summary>
+        /// Initializes a new instance of "--trace" option
+        /// </summary>
         public TraceOption() : base(new[] { "--trace", "-t" }, "Write trace log") { }
 
         public static CommandLineBuilder AddToBuilder(CommandLineBuilder builder)
         {
-            var Trace = new TraceOption();
-            builder.Command.AddGlobalOption(Trace);
+            var Option = new TraceOption();
+            builder.Command.AddGlobalOption(Option);
             builder.AddMiddleware((context, next) =>
             {
-                var trace = context.ParseResult.FindResultFor(Trace) is not null;
-                if (trace && !System.Diagnostics.Trace.Listeners.Contains(TL))
+                var trace = context.ParseResult.FindResultFor(Option) is not null;
+                if (trace && !Trace.Listeners.Contains(TL))
                 {
                     TL ??= new LogListener();
-                    System.Diagnostics.Trace.Listeners.Add(TL);
+                    Trace.Listeners.Add(TL);
                 }
                 else
                 {
-                    System.Diagnostics.Trace.Listeners.Remove(TL);
+                    Trace.Listeners.Remove(TL);
                 }
                 return next(context);
             });

@@ -1,6 +1,6 @@
 # ModpacksCH [![Build artifact](https://img.shields.io/github/actions/workflow/status/Virenbar/ModpacksCH/build-artifact.yml?label=Build&logo=github)](https://github.com/Virenbar/ModpacksCH/actions/workflows/build-artifact.yml)
 
-Command line application for downloading modpacks from [Feed the Beast](https://www.feed-the-beast.com/modpacks) (modpacks.ch)
+CLI tool for downloading modpacks from [Feed the Beast](https://www.feed-the-beast.com/modpacks) and [CurseForge](https://www.curseforge.com/minecraft/modpacks) using modpacks.ch
 
 ![terminal](/assets/images/terminal.gif)
 
@@ -8,9 +8,9 @@ Command line application for downloading modpacks from [Feed the Beast](https://
 .\ModpacksCH <command> [options]
 
 Commands:
-    s, search <name>                     Search modpacks by name
-    i, info <modpackID>                  Show info about modpack
-    d, download <modpackID> <versionID>  Download modpack
+    s, search <name>                       Search modpacks by name
+    i, info <modpackID>                    Show info about modpack
+    d, download <modpackID> [<versionID>]  Download modpack
 
 Options:
     -s, --server       Download server version
@@ -75,6 +75,6 @@ Options:
 
 * You can also find modpack and version ID on [modpack page](https://www.feed-the-beast.com/modpacks)
 * note.txt contains Forge version and recommended memory
-* CurseForge modpack download is **WIP** (Or even broken)
 * Executing without arguments will launch in interactive mode
 * Windows 7 not supported (modpack.ch supports only TLS 1.3)
+* Tested with Stoneblock 3 and ATM 8

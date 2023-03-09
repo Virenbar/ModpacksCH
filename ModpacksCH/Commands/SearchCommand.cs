@@ -1,4 +1,5 @@
 ﻿using ModpacksCH.API;
+using ModpacksCH.Options;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -12,36 +13,38 @@ namespace ModpacksCH.Commands
         {
             AddAlias("s");
             AddArgument(new Argument<string>("name", "Modpack Name"));
+            AddOption(new LimitOption());
 
-            Handler = CommandHandler.Create<string>(HandleCommand);
+            Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private async Task<int> HandleCommand(string name)
+        private async Task<int> HandleCommand(string name, int? limit)
         {
             Trace.WriteLine($"Search: {name}");
-            (var Modpacks, var CFModpacks) = await AnsiConsole.Status()
+            var Limit = limit ?? 10;
+            (var CHModpacks, var CFModpacks) = await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Searching modpacks...", async ctx =>
                 {
                     using var CH = new CHClient();
-                    var Result = await CH.Search(name);
-                    var Modpacks = await Task.WhenAll(Result.Packs.Select(ID => CH.GetCHModpack(ID)));
+                    var Result = await CH.Search(name, Limit);
+                    var CHModpacks = await Task.WhenAll(Result.Packs.Select(ID => CH.GetCHModpack(ID)));
                     var CFModpacks = await Task.WhenAll(Result.CurseForge.Select(ID => CH.GetCFModpack(ID)));
                     ctx.Status("Search complete");
-                    return (Modpacks, CFModpacks);
+                    return (CHModpacks, CFModpacks);
                 });
-            Trace.WriteLine($"Search done: {Modpacks.Length} {CFModpacks.Length}");
-            if (Modpacks.Length + CFModpacks.Length == 0)
+            Trace.WriteLine($"Search done: {CHModpacks.Length} {CFModpacks.Length}");
+            if (CHModpacks.Length + CFModpacks.Length == 0)
             {
                 AnsiConsole.MarkupLine("[yellow]No modpacks found[/]");
                 return 0;
             }
 
-            if (Modpacks.Length > 0)
+            if (CHModpacks.Length > 0)
             {
                 var T = new Table { Title = new TableTitle("[white]FTB Modpacks[/]") };
                 T.AddColumns("ID", "Name", "Version", "MC Version");
-                foreach (var M in Modpacks)
+                foreach (var M in CHModpacks)
                 {
                     T.AddRow($"[yellow]{M.ID}[/]", M.Name, $"{M.LatestVersion().Name}", M.LatestVersion().MinecraftVersion() ?? "Empty");
                 }
@@ -49,7 +52,7 @@ namespace ModpacksCH.Commands
             }
             if (CFModpacks.Length > 0)
             {
-                var T = new Table { Title = new TableTitle("[white]CurseForge Modpacks ([red]WIP[/])[/]") };
+                var T = new Table { Title = new TableTitle("[white]CurseForge Modpacks[/]") };
                 T.AddColumns("ID", "Name", "Version");
                 foreach (var M in CFModpacks)
                 {

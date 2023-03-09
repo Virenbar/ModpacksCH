@@ -5,12 +5,14 @@ using System.Diagnostics;
 
 namespace ModpacksCH
 {
-    public class ModpackDownloader : IDisposable
+    public abstract class ModpackDownloader : IDisposable
     {
-        private readonly DownloadInfo Info;
-        private readonly SemaphoreSlim Semaphore;
-        private CFClient CF;
-        private HttpClient Client;
+        protected readonly DownloadInfo Info;
+        protected readonly SemaphoreSlim Semaphore;
+        protected int Count;
+        private const string CDNEndpoint = "https://edge.forgecdn.net/files";
+        private readonly CFClient CF = new();
+        private readonly HttpClient Client = new();
 
         public ModpackDownloader(DownloadInfo info) : this(info, 4) { }
 
@@ -20,44 +22,39 @@ namespace ModpacksCH
             Semaphore = new(threads);
         }
 
-        public Task Download() => Download(default);
-
-        public async Task Download(IProgress<int> IP)
+        public virtual async Task<string> Download(string path, IProgress<int> IP = default)
         {
             var Files = Info.Files;
-            int Count = 0;
             Trace.WriteLine($"Download started: {Files.Count} files");
-            using (Client = new())
+            var Tasks = Files.Select(async (F) =>
             {
-                var Tasks = Files.Select(async (F) =>
-                {
-                    await TryDownloadTile(F);
-                    Interlocked.Increment(ref Count);
-                    IP.Report(Count);
-                });
-                await Task.WhenAll(Tasks);
-                IP.Report(Count);
-            }
+                await DownloadFile(path, F);
+                Interlocked.Increment(ref Count);
+                IP?.Report(Count);
+            });
+            await Task.WhenAll(Tasks);
+            IP.Report(Count);
             Trace.WriteLine($"Download done: {Files.Count} files");
-            //TODO Add hash check
+            // TODO Add hash check
+            return path;
         }
 
-        private async Task<string> TryDownloadTile(ModpackFile file)
+        protected async Task<string> DownloadFile(string path, ModpackFile file)
         {
             await Semaphore.WaitAsync();
 
-            var LocalFile = new FileInfo(Path.Combine(Info.OutPath, file.Path, file.Name));
+            var LocalFile = new FileInfo(Path.Combine(path, file.Path, file.Name));
             var URL = file.Url;
             if (string.IsNullOrEmpty(URL))
             {
-                CF ??= new CFClient();
                 var File = (await CF.GetModFile(file.CurseForge.Project, file.CurseForge.File)).Data;
                 URL = File.DownloadURL;
-                //IDK Why url is null
+                //IDK Why url is null; Controlled by mod author?
                 if (URL is null)
                 {
+                    // It just works
                     var ID = file.CurseForge.File.ToString();
-                    URL = $"https://edge.forgecdn.net/files/{ID[..4]}/{ID[4..]}/{File.FileName}";
+                    URL = $"{CDNEndpoint}/{ID[..4]}/{ID[4..]}/{File.FileName}";
                 }
             }
 
@@ -65,10 +62,23 @@ namespace ModpacksCH
             using var Responce = await Client.GetAsync(URL);
             Responce.EnsureSuccessStatusCode();
             Directory.CreateDirectory(LocalFile.DirectoryName);
-            using var FS = new FileStream(LocalFile.FullName, FileMode.Create);
-            await Responce.Content.CopyToAsync(FS);
+            using (var FS = new FileStream(LocalFile.FullName, FileMode.Create))
+            {
+                await Responce.Content.CopyToAsync(FS);
+            }
+
             Semaphore.Release();
             return LocalFile.FullName;
+        }
+
+        public static ModpackDownloader Create(DownloadInfo info)
+        {
+            return info.Version switch
+            {
+                CHVersion => new CHDownloader(info),
+                CFVersion => new CFDownloader(info),
+                _ => throw new NotImplementedException()
+            };
         }
 
         #region IDispose

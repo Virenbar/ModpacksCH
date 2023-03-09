@@ -1,4 +1,5 @@
 ﻿using ModpacksCH.API;
+using ModpacksCH.API.Model;
 using ModpacksCH.Models;
 using ModpacksCH.Options;
 using Spectre.Console;
@@ -11,6 +12,8 @@ namespace ModpacksCH.Commands
 {
     internal class DownloadCommand : Command
     {
+        private readonly Stopwatch SW = new();
+
         public DownloadCommand() : base("download", "Download modpack")
         {
             AddAlias("d");
@@ -36,22 +39,12 @@ namespace ModpacksCH.Commands
                     return (M, V);
                 });
             AnsiConsole.MarkupLine($"Modpack: [white]{Modpack.Name}[/] (Version: [yellow]{Version.Name})[/]");
+            var Info = new DownloadInfo(Modpack, Version, server);
+            var Progress = AnsiConsole.Progress();
+            Progress.Columns(new ProgressColumn[] { new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new SpinnerColumn() });
 
-            var ModpackName = $"{Modpack.Name} - {Version.Name}{(server ? "(server)" : "")}";
-            var ModpackPath = Path.Combine(path.FullName, ModpackName);
-            var Info = new DownloadInfo(Modpack, Version, ModpackPath, server);
-
-            var SW = new Stopwatch();
             SW.Start();
-            await AnsiConsole.Progress()
-                .Columns(new ProgressColumn[]
-                {
-                    new TaskDescriptionColumn(),
-                    new ProgressBarColumn(),
-                    new PercentageColumn(),
-                    new SpinnerColumn()
-                })
-                .StartAsync(async ctx =>
+            var ModpackPath = await Progress.StartAsync(async ctx =>
                 {
                     var T = ctx.AddTask($"Downloading files 0/{Info.Files.Count}", true, Info.Files.Count);
                     var P = new Progress<int>(I =>
@@ -59,16 +52,17 @@ namespace ModpacksCH.Commands
                         T.Value = I;
                         T.Description = T.Description.RegexReplace(@"\d+/\d+", $"{T.Value}/{T.MaxValue}");
                     });
-                    using var MD = new ModpackDownloader(Info);
-                    await MD.Download(P);
+                    using ModpackDownloader MD = ModpackDownloader.Create(Info);
+                    var Path = await MD.Download(path.FullName, P);
                     T.StopTask();
+                    return Path;
                 });
             SW.Stop();
 
-            var Out = new Grid()
-                .AddColumns(2)
-                .AddRow("[white]Download done:[/]", $@"[yellow]{SW.Elapsed:hh\:mm\:ss}[/]")
-                .AddRow(new Markup("[white]Modpack path:[/]"), new TextPath(ModpackPath).LeafColor(Color.Yellow));
+            var Out = new Grid();
+            Out.AddColumns(2);
+            Out.AddRow("[white]Download done:[/]", $@"[yellow]{SW.Elapsed:hh\:mm\:ss}[/]");
+            Out.AddRow(new Markup("[white]Modpack path:[/]"), new TextPath(ModpackPath).LeafColor(Color.Yellow));
             AnsiConsole.Write(Out);
 
             var Game = Version.Game();
@@ -79,9 +73,12 @@ namespace ModpacksCH.Commands
                 .AddColumns(2)
                 .AddRow($"{Game.Name.ToTitleCase()} version:", $"{Game.Version}")
                 .AddRow($"{Runtime.Name.ToTitleCase()} version:", $"{Runtime.Version}")
-                .AddRow($"{ModLoader.Name.ToTitleCase()} version:", $"{ModLoader.Version}")
-                .AddRow("Minimum memory:", $"{Version.Specs.Minimum}")
-                .AddRow("Recommended memory:", $"{Version.Specs.Recommended}");
+                .AddRow($"{ModLoader.Name.ToTitleCase()} version:", $"{ModLoader.Version}");
+            if (Version is CHVersion CH)
+            {
+                Specification.AddRow("Minimum memory:", $"{CH.Specs.Minimum}");
+                Specification.AddRow("Recommended memory:", $"{CH.Specs.Recommended}");
+            }
             AnsiConsole.Write(new Panel(Specification) { Header = new PanelHeader("[yellow]Specification[/]", Justify.Center) });
 
             var Note = new StringBuilder();

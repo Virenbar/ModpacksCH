@@ -1,4 +1,8 @@
-﻿namespace ModpacksCH.API.Model
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+
+namespace ModpacksCH.API.Model
 {
     public class ModpackFile
     {
@@ -12,7 +16,10 @@
         public string SHA1 { get; set; }
         public int Size { get; set; }
         public List<Tag> Tags { get; set; }
-        public string Type { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
+        public ModpackFileType Type { get; set; }
+
         public long Updated { get; set; }
         public string Url { get; set; }
         public string Version { get; set; }

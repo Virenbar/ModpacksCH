@@ -1,4 +1,5 @@
 ﻿using ModpacksCH.API;
+using ModpacksCH.Options;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -12,13 +13,15 @@ namespace ModpacksCH.Commands
         {
             AddAlias("i");
             AddArgument(new Argument<int>("modpackID", "Modpack ID"));
+            AddOption(new LimitOption());
 
             Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private async Task<int> HandleCommand(int modpackID)
+        private async Task<int> HandleCommand(int modpackID, int? limit)
         {
             Trace.WriteLine($"Info: {modpackID}");
+            var Limit = limit ?? 10;
             var Modpack = await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching modpack info...", async ctx =>
@@ -34,14 +37,17 @@ namespace ModpacksCH.Commands
                 return 0;
             }
 
-            var Versions = Modpack.Versions.OrderByDescending(V => V.ID);
+            var Versions = Modpack.Versions.OrderByDescending(V => V.ID).Take(Limit);
             AnsiConsole.MarkupLine($"Modpack: [white]{Modpack.Name}[/] (ID: [yellow]{modpackID}[/])");
             Panel P = new(Modpack.Synopsis) { Header = new("[yellow]Synopsis[/]", Justify.Center) };
             AnsiConsole.Write(P);
             AnsiConsole.MarkupLine($"Latest version: {Versions.First().ToMarkup()}");
 
             var Root = new Tree("Other versions");
-            foreach (var V in Versions.Skip(1)) { Root.AddNode(V.ToMarkup()); }
+            foreach (var version in Versions.Skip(1))
+            {
+                Root.AddNode(version.ToMarkup());
+            }
             AnsiConsole.Write(Root);
 
             return 0;
