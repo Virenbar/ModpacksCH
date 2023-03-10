@@ -7,7 +7,7 @@ using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Text;
 
-internal class Program
+internal static class Program
 {
     private static readonly Parser Parser;
 

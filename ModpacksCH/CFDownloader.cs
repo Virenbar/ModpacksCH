@@ -9,22 +9,21 @@ namespace ModpacksCH
     internal class CFDownloader : ModpackDownloader
     {
         private readonly DirectoryInfo Temp = new(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
-        private Manifest Manifest;
 
         public CFDownloader(DownloadInfo info) : base(info) { }
 
         public CFDownloader(DownloadInfo info, int threads) : base(info, threads) { }
 
-        public override async Task<string> Download(string path, IProgress<int> IP = null)
+        public override async Task<string> Download(string path, IProgress<int> IP)
         {
             Trace.WriteLine($"Download manifest: {Temp.FullName}");
             var Archive = Info.Files.First(F => F.Name == "overrides.zip");
             Info.Files.Remove(Archive);
-            var t = await DownloadFile(Temp.FullName, Archive);
+            var ArchivePath = await DownloadFile(Temp.FullName, Archive);
             Count++;
 
-            ZipFile.ExtractToDirectory(t, Temp.FullName, true);
-            Manifest = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(Path.Combine(Temp.FullName, "manifest.json")));
+            ZipFile.ExtractToDirectory(ArchivePath, Temp.FullName, true);
+            var Manifest = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(Path.Combine(Temp.FullName, "manifest.json")));
             var ModpackName = $"{Info.Modpack.Name} - {Manifest.Version}{(Info.IsServer ? "(server)" : "")}";
             var ModpackPath = Path.Combine(path, ModpackName);
             Trace.WriteLine($"Modpack: {ModpackName}");

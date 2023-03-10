@@ -14,15 +14,27 @@ namespace ModpacksCH
         private readonly CFClient CF = new();
         private readonly HttpClient Client = new();
 
-        public ModpackDownloader(DownloadInfo info) : this(info, 4) { }
+        protected ModpackDownloader(DownloadInfo info) : this(info, 4) { }
 
-        public ModpackDownloader(DownloadInfo info, int threads)
+        protected ModpackDownloader(DownloadInfo info, int threads)
         {
             Info = info;
             Semaphore = new(threads);
         }
 
-        public virtual async Task<string> Download(string path, IProgress<int> IP = default)
+        public static ModpackDownloader Create(DownloadInfo info)
+        {
+            return info.Version switch
+            {
+                CHVersion => new CHDownloader(info),
+                CFVersion => new CFDownloader(info),
+                _ => throw new NotImplementedException()
+            };
+        }
+
+        public virtual Task<string> Download(string path) => Download(path, default);
+
+        public virtual async Task<string> Download(string path, IProgress<int> IP)
         {
             var Files = Info.Files;
             Trace.WriteLine($"Download started: {Files.Count} files");
@@ -69,16 +81,6 @@ namespace ModpacksCH
 
             Semaphore.Release();
             return LocalFile.FullName;
-        }
-
-        public static ModpackDownloader Create(DownloadInfo info)
-        {
-            return info.Version switch
-            {
-                CHVersion => new CHDownloader(info),
-                CFVersion => new CFDownloader(info),
-                _ => throw new NotImplementedException()
-            };
         }
 
         #region IDispose

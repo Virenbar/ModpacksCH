@@ -8,7 +8,7 @@ namespace ModpacksCH
 
         public CHDownloader(DownloadInfo info, int threads) : base(info, threads) { }
 
-        public override Task<string> Download(string path, IProgress<int> IP = null)
+        public override Task<string> Download(string path, IProgress<int> IP)
         {
             var ModpackName = $"{Info.Modpack.Name} - {Info.Version.Name}{(Info.IsServer ? "(server)" : "")}";
             var ModpackPath = Path.Combine(path, ModpackName);

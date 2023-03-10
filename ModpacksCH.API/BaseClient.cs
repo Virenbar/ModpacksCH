@@ -10,7 +10,7 @@ namespace ModpacksCH.API
 
         static BaseClient()
         {
-            // Windows 7 does't support TSL 1.3
+            // Windows 7 doesn't support TSL 1.3
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13 | SecurityProtocolType.Tls12;
         }
 

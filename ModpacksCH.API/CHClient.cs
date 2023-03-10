@@ -8,11 +8,11 @@ namespace ModpacksCH.API
 
         public CHClient() : base(EndPoint) { }
 
-        public Task<CFManifest> GetCFModpack(int modpackID) => Get<CFManifest>($"/public/curseforge/{modpackID}");
+        public Task<CFModpack> GetCFModpack(int modpackID) => Get<CFModpack>($"/public/curseforge/{modpackID}");
 
         public Task<CFVersion> GetCFVersion(int modpackID, int versionID) => Get<CFVersion>($"/public/curseforge/{modpackID}/{versionID}");
 
-        public Task<CHManifest> GetCHModpack(int modpackID) => Get<CHManifest>($"/public/modpack/{modpackID}");
+        public Task<CHModpack> GetCHModpack(int modpackID) => Get<CHModpack>($"/public/modpack/{modpackID}");
 
         public Task<CHVersion> GetCHVersion(int modpackID, int versionID) => Get<CHVersion>($"/public/modpack/{modpackID}/{versionID}");
 
