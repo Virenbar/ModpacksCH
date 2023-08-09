@@ -40,7 +40,19 @@ namespace ModpacksCH
             Trace.WriteLine($"Download started: {Files.Count} files");
             var Tasks = Files.Select(async (F) =>
             {
-                await DownloadFile(path, F);
+                try
+                {
+                    await DownloadFile(path, F);
+                }
+                catch (Exception ex)
+                {
+                    var line = $"Failed to download file: {F.Name} ({F.Url})";
+                    Console.WriteLine(line); 
+                    Console.WriteLine(ex);
+                    Trace.WriteLine(line);
+                    return;
+                }
+                
                 Interlocked.Increment(ref Count);
                 IP?.Report(Count);
             });
