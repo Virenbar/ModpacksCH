@@ -2,12 +2,12 @@
 
 namespace ModpacksCH.API.Model.CurseForge
 {
-    public class Hash
+    public class FileHash
     {
         [JsonProperty("value")]
         public string Value { get; set; }
 
         [JsonProperty("algo")]
-        public long Algo { get; set; }
+        public FileAlgo Algo { get; set; }
     }
 }

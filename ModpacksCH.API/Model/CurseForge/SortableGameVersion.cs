@@ -17,6 +17,6 @@ namespace ModpacksCH.API.Model.CurseForge
         public DateTimeOffset GameVersionReleaseDate { get; set; }
 
         [JsonProperty("gameVersionTypeId")]
-        public long GameVersionTypeId { get; set; }
+        public long? GameVersionTypeId { get; set; }
     }
 }

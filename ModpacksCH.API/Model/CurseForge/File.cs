@@ -5,19 +5,19 @@ namespace ModpacksCH.API.Model.CurseForge
     public class ModFileResponse
     {
         [JsonProperty("data")]
-        public ModFile Data { get; set; }
+        public File Data { get; set; }
     }
 
-    public class ModFile
+    public class File
     {
         [JsonProperty("id")]
-        public long ID { get; set; }
+        public int ID { get; set; }
 
         [JsonProperty("gameId")]
-        public long GameId { get; set; }
+        public int GameId { get; set; }
 
         [JsonProperty("modId")]
-        public long ModId { get; set; }
+        public int ModId { get; set; }
 
         [JsonProperty("isAvailable")]
         public bool IsAvailable { get; set; }
@@ -29,13 +29,13 @@ namespace ModpacksCH.API.Model.CurseForge
         public string FileName { get; set; }
 
         [JsonProperty("releaseType")]
-        public long ReleaseType { get; set; }
+        public FileReleaseType ReleaseType { get; set; }
 
         [JsonProperty("fileStatus")]
-        public long FileStatus { get; set; }
+        public FileStatus FileStatus { get; set; }
 
         [JsonProperty("hashes")]
-        public Hash[] Hashes { get; set; }
+        public FileHash[] Hashes { get; set; }
 
         [JsonProperty("fileDate")]
         public DateTimeOffset FileDate { get; set; }
@@ -45,6 +45,9 @@ namespace ModpacksCH.API.Model.CurseForge
 
         [JsonProperty("downloadCount")]
         public long DownloadCount { get; set; }
+
+        [JsonProperty("fileSizeOnDisk")]
+        public long? FileSizeOnDisk { get; set; }
 
         [JsonProperty("downloadUrl")]
         public string DownloadURL { get; set; }
@@ -56,27 +59,27 @@ namespace ModpacksCH.API.Model.CurseForge
         public SortableGameVersion[] SortableGameVersions { get; set; }
 
         [JsonProperty("dependencies")]
-        public Dependency[] Dependencies { get; set; }
+        public FileDependency[] Dependencies { get; set; }
 
         [JsonProperty("exposeAsAlternative")]
-        public bool ExposeAsAlternative { get; set; }
+        public bool? ExposeAsAlternative { get; set; }
 
         [JsonProperty("parentProjectFileId")]
-        public long ParentProjectFileID { get; set; }
+        public int? ParentProjectFileID { get; set; }
 
         [JsonProperty("alternateFileId")]
-        public long AlternateFileID { get; set; }
+        public int? AlternateFileID { get; set; }
 
         [JsonProperty("isServerPack")]
-        public bool IsServerPack { get; set; }
+        public bool? IsServerPack { get; set; }
 
         [JsonProperty("serverPackFileId")]
-        public long ServerPackFileID { get; set; }
+        public int? ServerPackFileID { get; set; }
 
         [JsonProperty("fileFingerprint")]
         public long FileFingerprint { get; set; }
 
         [JsonProperty("modules")]
-        public Module[] Modules { get; set; }
+        public FileModule[] Modules { get; set; }
     }
 }

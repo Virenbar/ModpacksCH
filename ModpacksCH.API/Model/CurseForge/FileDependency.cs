@@ -2,12 +2,12 @@
 
 namespace ModpacksCH.API.Model.CurseForge
 {
-    public class Dependency
+    public class FileDependency
     {
         [JsonProperty("modId")]
-        public long ModId { get; set; }
+        public int ModId { get; set; }
 
         [JsonProperty("relationType")]
-        public long RelationType { get; set; }
+        public FileRelationType RelationType { get; set; }
     }
 }
