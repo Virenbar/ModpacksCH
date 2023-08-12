@@ -1,4 +1,4 @@
-# ModpacksCH [![Build artifact](https://img.shields.io/github/actions/workflow/status/Virenbar/ModpacksCH/build-artifact.yml?label=Build&logo=github)](https://github.com/Virenbar/ModpacksCH/actions/workflows/build-artifact.yml)
+# ModpacksCH [![Build artifact][build-src]][build-href] [![Codacy Badge][codacy-src]][codacy-href]
 
 CLI tool for downloading modpacks from [Feed the Beast](https://www.feed-the-beast.com/modpacks) and [CurseForge](https://www.curseforge.com/minecraft/modpacks) using modpacks.ch
 
@@ -78,3 +78,10 @@ Options:
 * Executing without arguments will launch in interactive mode
 * Windows 7 not supported (modpack.ch supports only TLS 1.3)
 * Tested with Stoneblock 3 and ATM 8
+
+<!-- Badges -->
+[build-src]: https://img.shields.io/github/actions/workflow/status/Virenbar/ModpacksCH/build-artifact.yml?label=Build&logo=github
+[build-href]: https://github.com/Virenbar/ModpacksCH/actions/workflows/build-artifact.yml
+
+[codacy-src]: https://app.codacy.com/project/badge/Grade/154db494fb9947a19a391ea35aa9744c
+[codacy-href]: https://app.codacy.com/gh/Virenbar/ModpacksCH/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
