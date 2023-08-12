@@ -8,11 +8,11 @@ namespace ModpacksCH
 
         public CHDownloader(DownloadInfo info, int threads) : base(info, threads) { }
 
-        public override Task<string> Download(string path, IProgress<int> IP)
+        public override Task<DownloadResult> Download(string path, IProgress<int> IP)
         {
-            var ModpackName = $"{Info.Modpack.Name} - {Info.Version.Name}{(Info.IsServer ? "(server)" : "")}";
-            var ModpackPath = Path.Combine(path, ModpackName);
-            return base.Download(ModpackPath, IP);
+            var modpackName = $"{Info.Modpack.Name} - {Info.Version.Name}{(Info.IsServer ? "(server)" : "")}";
+            var modpackPath = Path.Combine(path, modpackName);
+            return base.Download(modpackPath, IP);
         }
     }
 }

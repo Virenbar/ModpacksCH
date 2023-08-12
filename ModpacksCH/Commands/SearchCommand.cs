@@ -23,7 +23,6 @@ namespace ModpacksCH.Commands
             Trace.WriteLine($"Search: {name}");
             var Limit = limit ?? 10;
             (var CHModpacks, var CFModpacks) = await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
                 .StartAsync("Searching modpacks...", async ctx =>
                 {
                     using var CH = new CHClient();

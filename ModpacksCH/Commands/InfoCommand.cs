@@ -23,7 +23,6 @@ namespace ModpacksCH.Commands
             Trace.WriteLine($"Info: {modpackID}");
             var Limit = limit ?? 10;
             var Modpack = await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching modpack info...", async ctx =>
                 {
                     using var CH = new CHClient();

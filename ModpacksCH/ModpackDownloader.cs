@@ -32,55 +32,67 @@ namespace ModpacksCH
             };
         }
 
-        public virtual Task<string> Download(string path) => Download(path, default);
+        public virtual Task<DownloadResult> Download(string path) => Download(path, default);
 
-        public virtual async Task<string> Download(string path, IProgress<int> IP)
+        public virtual async Task<DownloadResult> Download(string path, IProgress<int> IP)
         {
-            var Files = Info.Files;
-            Trace.WriteLine($"Download started: {Files.Count} files");
-            var Tasks = Files.Select(async (F) =>
+            var errors = new List<string>();
+            var files = Info.Files;
+            files.Reverse();
+            Trace.WriteLine($"Download started: {files.Count} files");
+            var tasks = files.Select(async (F) =>
             {
-                await DownloadFile(path, F);
-                Interlocked.Increment(ref Count);
-                IP?.Report(Count);
+                try
+                {
+                    await DownloadFile(path, F);
+                    Interlocked.Increment(ref Count);
+                    IP.Report(Count);
+                }
+                catch (Exception e)
+                {
+                    var error = $"File: {F.Name}\nException: {e.Message}";
+                    errors.Add(error);
+                }
             });
-            await Task.WhenAll(Tasks);
+            await Task.WhenAll(tasks);
             IP.Report(Count);
-            Trace.WriteLine($"Download done: {Files.Count} files");
+            Trace.WriteLine($"Download done: {files.Count} files");
             // TODO Add hash check
-            return path;
+            return new DownloadResult(path, errors);
         }
 
         protected async Task<string> DownloadFile(string path, ModpackFile file)
         {
             await Semaphore.WaitAsync();
-
-            var LocalFile = new FileInfo(Path.Combine(path, file.Path, file.Name));
-            var URL = file.Url;
-            if (string.IsNullOrEmpty(URL))
+            var localFile = new FileInfo(Path.Combine(path, file.Path, file.Name));
+            try
             {
-                var File = (await CF.GetModFile(file.CurseForge.Project, file.CurseForge.File)).Data;
-                URL = File.DownloadURL;
-                //IDK Why url is null; Controlled by mod author?
-                if (URL is null)
+                var URL = file.Url;
+                if (string.IsNullOrEmpty(URL))
                 {
-                    // It just works
-                    var ID = file.CurseForge.File.ToString();
-                    URL = $"{CDNEndpoint}/{ID[..4]}/{ID[4..]}/{File.FileName}";
+                    var curseFile = (await CF.GetModFile(file.CurseForge.Project, file.CurseForge.File)).Data;
+                    URL = curseFile.DownloadURL;
+                    //IDK Why url is null; Controlled by mod author?
+                    if (URL is null)
+                    {
+                        // It just works
+                        var ID = file.CurseForge.File.ToString();
+                        URL = $"{CDNEndpoint}/{ID[..4]}/{ID[4..]}/{curseFile.FileName}";
+                    }
                 }
-            }
 
-            Trace.WriteLine($"Downloading file: {URL} ");
-            using var Responce = await Client.GetAsync(URL);
-            Responce.EnsureSuccessStatusCode();
-            Directory.CreateDirectory(LocalFile.DirectoryName);
-            using (var FS = new FileStream(LocalFile.FullName, FileMode.Create))
+                Trace.WriteLine($"Downloading file: {URL} ");
+                using var responce = await Client.GetAsync(URL);
+                responce.EnsureSuccessStatusCode();
+                Directory.CreateDirectory(localFile.DirectoryName);
+                using var FS = new FileStream(localFile.FullName, FileMode.Create);
+                await responce.Content.CopyToAsync(FS);
+            }
+            finally
             {
-                await Responce.Content.CopyToAsync(FS);
+                Semaphore.Release();
             }
-
-            Semaphore.Release();
-            return LocalFile.FullName;
+            return localFile.FullName;
         }
 
         #region IDispose
