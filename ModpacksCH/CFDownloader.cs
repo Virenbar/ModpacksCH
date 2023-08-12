@@ -14,34 +14,34 @@ namespace ModpacksCH
 
         public CFDownloader(DownloadInfo info, int threads) : base(info, threads) { }
 
-        public override async Task<string> Download(string path, IProgress<int> IP)
+        public override async Task<DownloadResult> Download(string path, IProgress<int> IP)
         {
             Trace.WriteLine($"Download manifest: {Temp.FullName}");
-            var Archive = Info.Files.First(F => F.Name == "overrides.zip");
-            Info.Files.Remove(Archive);
-            var ArchivePath = await DownloadFile(Temp.FullName, Archive);
+            var archive = Info.Files.First(F => F.Name == "overrides.zip");
+            Info.Files.Remove(archive);
+            var archivePath = await DownloadFile(Temp.FullName, archive);
+            ZipFile.ExtractToDirectory(archivePath, Temp.FullName, true);
             Count++;
 
-            ZipFile.ExtractToDirectory(ArchivePath, Temp.FullName, true);
-            var Manifest = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(Path.Combine(Temp.FullName, "manifest.json")));
-            var ModpackName = $"{Info.Modpack.Name} - {Manifest.Version}{(Info.IsServer ? "(server)" : "")}";
-            var ModpackPath = Path.Combine(path, ModpackName);
-            Trace.WriteLine($"Modpack: {ModpackName}");
+            var manifest = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(Path.Combine(Temp.FullName, "manifest.json")));
+            var modpackName = $"{Info.Modpack.Name} - {manifest.Version}{(Info.IsServer ? "(server)" : "")}";
+            var modpackPath = Path.Combine(path, modpackName);
+            Trace.WriteLine($"Modpack: {modpackName}");
 
-            var Overrides = new DirectoryInfo(Path.Combine(Temp.FullName, Manifest.Overrides));
-            var Files = Overrides.EnumerateFiles("*", SearchOption.AllDirectories);
-            foreach (var file in Files)
+            var overrides = new DirectoryInfo(Path.Combine(Temp.FullName, manifest.Overrides));
+            var files = overrides.EnumerateFiles("*", SearchOption.AllDirectories);
+            foreach (var file in files)
             {
-                var FF = Path.GetRelativePath(Overrides.FullName, file.FullName);
-                var Target = new FileInfo(Path.Combine(ModpackPath, FF));
-                Target.Directory.Create();
+                var relativePath = Path.GetRelativePath(overrides.FullName, file.FullName);
+                var filePath = new FileInfo(Path.Combine(modpackPath, relativePath));
+                filePath.Directory.Create();
 
-                file.MoveTo(Target.FullName, true);
+                file.MoveTo(filePath.FullName, true);
             }
             Temp.Delete(true);
             Trace.WriteLine($"Manifest and Overrides done");
-            ModpackPath = await base.Download(ModpackPath, IP);
-            return ModpackPath;
+            var (_, Errors) = await base.Download(modpackPath, IP);
+            return new(modpackPath, Errors);
         }
     }
 }

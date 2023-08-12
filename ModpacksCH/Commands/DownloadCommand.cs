@@ -28,8 +28,7 @@ namespace ModpacksCH.Commands
         private async Task<int> HandleCommand(int modpackID, int? versionID, bool server, DirectoryInfo path)
         {
             Trace.WriteLine($"Download: {modpackID}-{versionID}-{server}-{path}");
-            (var Modpack, var Version) = await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
+            var (modpack, version) = await AnsiConsole.Status()
                 .StartAsync("Fetching modpack info...", async ctx =>
                 {
                     using var CH = new CHClient();
@@ -38,54 +37,60 @@ namespace ModpacksCH.Commands
                     var V = await CH.GetVersion(modpackID, versionID.Value);
                     return (M, V);
                 });
-            AnsiConsole.MarkupLine($"Modpack: [white]{Modpack.Name}[/] (Version: [yellow]{Version.Name})[/]");
-            var Info = new DownloadInfo(Modpack, Version, server);
-            var Progress = AnsiConsole.Progress();
-            Progress.Columns(new ProgressColumn[] { new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new SpinnerColumn() });
-
+            AnsiConsole.MarkupLine($"Modpack: [white]{modpack.Name}[/] (Version: [yellow]{version.Name})[/]");
             SW.Start();
-            var ModpackPath = await Progress.StartAsync(async ctx =>
+            var info = new DownloadInfo(modpack, version, server);
+            var progress = AnsiConsole.Progress();
+            progress.Columns(new ProgressColumn[] { new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new SpinnerColumn() });
+            var (modpackPath, errors) = await progress.StartAsync(async ctx =>
                 {
-                    var T = ctx.AddTask($"Downloading files 0/{Info.Files.Count}", true, Info.Files.Count);
+                    var T = ctx.AddTask($"Downloading files 0/{info.Files.Count}", true, info.Files.Count);
                     var P = new Progress<int>(I =>
                     {
                         T.Value = I;
                         T.Description = T.Description.RegexReplace(@"\d+/\d+", $"{T.Value}/{T.MaxValue}");
                     });
-                    using ModpackDownloader MD = ModpackDownloader.Create(Info);
-                    var Path = await MD.Download(path.FullName, P);
+                    using ModpackDownloader MD = ModpackDownloader.Create(info);
+                    var result = await MD.Download(path.FullName, P);
                     T.StopTask();
-                    return Path;
+                    return result;
                 });
             SW.Stop();
 
-            var Out = new Grid();
-            Out.AddColumns(2);
-            Out.AddRow("[white]Download done:[/]", $@"[yellow]{SW.Elapsed:hh\:mm\:ss}[/]");
-            Out.AddRow(new Markup("[white]Modpack path:[/]"), new TextPath(ModpackPath).LeafColor(Color.Yellow));
-            AnsiConsole.Write(Out);
+            var downloadInfo = new Grid();
+            downloadInfo.AddColumns(2);
+            downloadInfo.AddRow("[white]Download done:[/]", $@"[yellow]{SW.Elapsed:hh\:mm\:ss}[/]");
+            downloadInfo.AddRow(new Markup("[white]Modpack path:[/]"), new TextPath(modpackPath).LeafColor(Color.Yellow));
+            AnsiConsole.Write(downloadInfo);
 
-            var Game = Version.Game();
-            var Runtime = Version.Runtime();
-            var ModLoader = Version.ModLoader();
+            var game = version.Game();
+            var runtime = version.Runtime();
+            var modLoader = version.ModLoader();
 
-            var Specification = new Grid()
+            var specification = new Grid()
                 .AddColumns(2)
-                .AddRow($"{Game.Name.ToTitleCase()} version:", $"{Game.Version}")
-                .AddRow($"{Runtime.Name.ToTitleCase()} version:", $"{Runtime.Version}")
-                .AddRow($"{ModLoader.Name.ToTitleCase()} version:", $"{ModLoader.Version}");
-            if (Version is CHVersion CH)
+                .AddRow($"{game.Name.ToTitleCase()} version:", $"{game.Version}")
+                .AddRow($"{runtime.Name.ToTitleCase()} version:", $"{runtime.Version}")
+                .AddRow($"{modLoader.Name.ToTitleCase()} version:", $"{modLoader.Version}");
+            if (version is CHVersion CH)
             {
-                Specification.AddRow("Minimum memory:", $"{CH.Specs.Minimum}");
-                Specification.AddRow("Recommended memory:", $"{CH.Specs.Recommended}");
+                specification.AddRow("Minimum memory:", $"{CH.Specs.Minimum}");
+                specification.AddRow("Recommended memory:", $"{CH.Specs.Recommended}");
             }
-            AnsiConsole.Write(new Panel(Specification) { Header = new PanelHeader("[yellow]Specification[/]", Justify.Center) });
+            AnsiConsole.Write(new Panel(specification) { Header = new PanelHeader("[yellow]Specification[/]", Justify.Center) });
+            if (errors.Count > 0)
+            {
+                AnsiConsole.MarkupLine("[red]Failed to download some files. More details in error.txt[/]");
+                var error = string.Join("\n\n", errors);
+                var file = Path.Combine(modpackPath, "error.txt");
+                File.WriteAllText(file, error);
+            }
 
-            var Note = new StringBuilder();
-            Note.AppendLine($"{Game.Name.ToTitleCase()} version: {Game.Version}");
-            Note.AppendLine($"{Runtime.Name.ToTitleCase()} version: {Runtime.Version}");
-            Note.AppendLine($"{ModLoader.Name.ToTitleCase()} version: {ModLoader.Version}");
-            File.WriteAllText(Path.Combine(ModpackPath, "note.txt"), Note.ToString());
+            var note = new StringBuilder();
+            note.AppendLine($"{game.Name.ToTitleCase()} version: {game.Version}");
+            note.AppendLine($"{runtime.Name.ToTitleCase()} version: {runtime.Version}");
+            note.AppendLine($"{modLoader.Name.ToTitleCase()} version: {modLoader.Version}");
+            File.WriteAllText(Path.Combine(modpackPath, "note.txt"), note.ToString());
 
             return 0;
         }
